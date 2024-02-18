@@ -49,6 +49,17 @@ if __name__ == '__main__':
         stem0, stem1 = Path(name0).stem, Path(name1).stem
         matches_path = match_dir / '{}_{}_matches.npz'.format(stem0, stem1)
         
+        # Load matching results
+        npz = np.load(matches_path)
+        num_matches = np.sum(npz['matches']>-1)
+        kpts0 = npz['keypoints0'].shape[0]
+        kpts1 = npz['keypoints1'].shape[0]
+        min_num_keypoint = min(kpts0, kpts1)
+        match_ratio = float(num_matches) / float(min_num_keypoint)
+        if match_ratio < 0.1: 
+            continue
+        viz_path = output_vis_dir / '{:.2f}_{}_{}_matches.png'.format(match_ratio, stem0, stem1)
+
         # Load the image pair.
         image0 = cv2.imread(str(input_dir / name0), cv2.IMREAD_GRAYSCALE)
         image1 = cv2.imread(str(input_dir / name1), cv2.IMREAD_GRAYSCALE)
@@ -57,15 +68,6 @@ if __name__ == '__main__':
                 input_dir/name0, input_dir/name1))
             exit(1)
         
-        # Load matching results
-        npz = np.load(matches_path)
-        num_matches = np.sum(npz['matches']>-1)
-        kpts0 = npz['keypoints0'].shape[0]
-        kpts1 = npz['keypoints1'].shape[0]
-        min_num_keypoint = min(kpts0, kpts1)
-        match_ratio = float(num_matches) / float(min_num_keypoint)
-        viz_path = output_vis_dir / '{:.2f}_{}_{}_matches.png'.format(match_ratio, stem0, stem1)
-
         # Visualize
         H0, W0 = image0.shape
         H1, W1 = image1.shape
