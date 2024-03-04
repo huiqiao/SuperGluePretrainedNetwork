@@ -56,7 +56,7 @@ if __name__ == '__main__':
             continue
         
         
-        output_file.write('{}\t{:.2f}\n'.format('\t'.join(pair), match_ratio))
+        output_file.write('{}\t{:.2f}\t{}\t{}\n'.format('\t'.join(pair), match_ratio, kpts0, kpts1))
 
     output_file.close()
     
